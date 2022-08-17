@@ -47,15 +47,13 @@ def flatten(input_dict, separator='_', prefix=''):
             output_dict[prefix+key] = value
     return output_dict
 
-def build_grand_chain(previous_list):
+def build_grand_chain(next_possible_nodes, previous_list):
     return_obj = {}
-    last_elem = previous_list[-1]
-    next_possible_nodes = possibilities[last_elem]
-    if(len(next_possible_nodes)):
-        for i, (j,v) in enumerate(next_possible_nodes.items()):
+    if(len(next_possible_nodes) and len(previous_list)):
+        for j in next_possible_nodes:
             if (j not in previous_list):
                 previous_list.append(j)
-                return_obj[str(j)] = build_grand_chain(previous_list)
+                return_obj[str(j)] = build_grand_chain(possibilities[j],previous_list)
         return return_obj
     else:
         return 'fuck'
@@ -72,10 +70,10 @@ def compute(seq):
     deduplicated_list = [list(i) for i in deduplicated_set]
     
     for i in range(len(seq)):
-        count = {}
+        count = []
         for j in deduplicated_list:
             if(seq[i] in j):
-                count[[k for k in j if k!=seq[i]][0]] = {}
+                count.append([k for k in j if k!=seq[i]][0])
         possibilities[seq[i]] = count
 
     for i, (k,v) in enumerate(possibilities.items()):
@@ -83,9 +81,9 @@ def compute(seq):
     
     g_chain = {}
     
-    for i, (j,v) in enumerate(possibilities.items()):
+    for j in possibilities.keys():
         previous_list = [j]
-        g_chain[str(j)] = build_grand_chain(previous_list)
+        g_chain[str(j)] = build_grand_chain(possibilities[j],previous_list)
     
     json_dump = json.dumps(flatten(g_chain),indent=2)
     print(json_dump)
