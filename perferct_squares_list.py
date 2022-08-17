@@ -4,6 +4,7 @@ from sympy.utilities.iterables import multiset_permutations
 import argparse
 from collections.abc import MutableMapping 
 import json 
+from scipy.stats._resampling import permutation_test
 
 grand_chain = {}
 possibilities = {}
@@ -111,6 +112,8 @@ def compute_v4(seq):
             )
     # print('\n', permutation_list, '\n')
     
+    print(permutation_list)
+    
     for i in range(len(seq)):
         count = []
         for j in permutation_list:
@@ -126,8 +129,8 @@ def compute_v4(seq):
         grand_chain[k] = {}
         li = list ([k])
         build_grand_chain(li)
-    json_dump = json.dumps(grand_chain,indent=2)
-    print(json_dump)
+    # json_dump = json.dumps(grand_chain,indent=2)
+    # print(json_dump)
 
 def build_grand_chain(li):
     if(len(li) > 0):
@@ -171,30 +174,6 @@ def build_grand_chain(li):
     #     final_list = []
     #     ite += 1
     # return permutation_list
-
-def recurse_compute_v4(seq):
-    if(math.isqrt(len(seq)) > 6):
-        seq_half_1 = list(seq[:math.floor(len(seq)/2)])
-        seq_half_2 = list(seq[math.floor(len(seq)/2):])
-        recurse_compute_v4(seq_half_1)
-        recurse_compute_v4(seq_half_2)
-    # ite = 1
-    # final_list = []
-    # while len(final_list) == 0 or len(final_list[0]) <= n:
-    #     print(permutation_list)
-    #     print('\nOuter iteration----------------------: ', ite)
-    #     print(len(permutation_list[0]))
-    #     for j in range(len(permutation_list)):
-    #         final_list.extend(
-    #             [permutation_list[j] + a for a in permutation_list[j+1:] if ((permutation_list[j][-1] + a[0]) in sq_array or (permutation_list[j][0] + a[-1]) in sq_array) and not(set(permutation_list[j]) & set(a))]
-    #             )
-    #     if(len(final_list) == 0):
-    #         break
-    #     permutation_list = list(final_list)
-    #     final_list = []
-    #     ite += 1
-    else:
-        compute_v4(seq)
 
 if __name__ == '__main__':
     argvparser = argparse.ArgumentParser()
