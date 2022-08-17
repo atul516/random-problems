@@ -30,13 +30,35 @@ def print_squares(seq):
     for i in range(l-1):
         print(seq[i] + seq[i+1])
 
+def flatten(input_dict, separator='_', prefix=''):
+    output_dict = {}
+    for key, value in input_dict.items():
+        if isinstance(value, dict) and value:
+            deeper = flatten(value, separator, prefix+key+separator)
+            output_dict.update({key2: val2 for key2, val2 in deeper.items()})
+        elif isinstance(value, list) and value:
+            for index, sublist in enumerate(value, start=1):
+                if isinstance(sublist, dict) and sublist:
+                    deeper = flatten(sublist, separator, prefix+key+separator+str(index)+separator)
+                    output_dict.update({key2: val2 for key2, val2 in deeper.items()})
+                else:
+                    output_dict[prefix+key+separator+str(index)] = value
+        else:
+            output_dict[prefix+key] = value
+    return output_dict
+
 def build_grand_chain(previous_list):
+    return_obj = {}
     last_elem = previous_list[-1]
     next_possible_nodes = possibilities[last_elem]
-    for i, (j,v) in enumerate(next_possible_nodes.items()):
-        if (is_square(j+last_elem) and j not in previous_list):
-            previous_list.append(j)
-            return {j : build_grand_chain(previous_list)}
+    if(len(next_possible_nodes)):
+        for i, (j,v) in enumerate(next_possible_nodes.items()):
+            if (j not in previous_list):
+                previous_list.append(j)
+                return_obj[str(j)] = build_grand_chain(previous_list)
+        return return_obj
+    else:
+        return 'fuck'
 
 def compute(seq):
     # print('**************Running Compute_v4 on sequence 32:*********************** \n ', seq)
@@ -63,9 +85,9 @@ def compute(seq):
     
     for i, (j,v) in enumerate(possibilities.items()):
         previous_list = [j]
-        g_chain[j] = build_grand_chain(previous_list)
+        g_chain[str(j)] = build_grand_chain(previous_list)
     
-    json_dump = json.dumps(g_chain,indent=2)
+    json_dump = json.dumps(flatten(g_chain),indent=2)
     print(json_dump)
     
 if __name__ == '__main__':
