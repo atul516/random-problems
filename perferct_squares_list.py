@@ -124,10 +124,15 @@ def compute_v4(seq):
 
     for i, (k,v) in enumerate(possibilities.items()):
         grand_chain[k] = {}
-        for j in possibilities[k]:
-            if(j not in list ([k])):
-                grand_chain[k][j] = {}
-                li = [k,j]
+        li = list ([k])
+        for l in possibilities[li[-1]]:
+            if(l not in li):
+                exprr = 'grand_chain['
+                for x in li:
+                    exprr += str(x) + ']' + '['
+                exprr += str(l) + ']'
+                exec('{} = {}'.format(exprr, '{}'))
+                li.append(l)
                 build_grand_chain(li)
     json_dump = json.dumps(grand_chain,indent=2)
     print(json_dump)
