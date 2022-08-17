@@ -108,20 +108,19 @@ def compute_v4(seq):
     permutation_list= []
     for i in range(len(seq)):
         permutation_list.extend(
-            [list((seq[i], a)) for a in seq[i:] if is_square(seq[i] + a) and seq[i] != a]
+            [list((seq[i], a)) for a in seq if is_square(seq[i] + a) and seq[i] != a]
             )
-    # print('\n', permutation_list, '\n')
-    
-    print(permutation_list)
+
+    deduplicated_set = set(map(frozenset, permutation_list))
+    deduplicated_list = [list(i) for i in deduplicated_set]
     
     for i in range(len(seq)):
         count = []
-        for j in permutation_list:
+        for j in deduplicated_list:
             if(seq[i] in j):
                 count.append([k for k in j if k!=seq[i]][0])
         possibilities[seq[i]] = count
 
-    #print possibilities
     # for i, (k,v) in enumerate(possibilities.items()):
     #     print(i, k, v)
 
@@ -129,8 +128,8 @@ def compute_v4(seq):
         grand_chain[k] = {}
         li = list ([k])
         build_grand_chain(li)
-    # json_dump = json.dumps(grand_chain,indent=2)
-    # print(json_dump)
+    json_dump = json.dumps(grand_chain,indent=2)
+    print(json_dump)
 
 def build_grand_chain(li):
     if(len(li) > 0):
