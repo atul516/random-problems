@@ -2,8 +2,13 @@ import math
 import argparse
 import sys
 
-possibilities = {}
+possibilities = []
+truncated_possibilities={}
 n = 0
+COUNT = 0
+def increment():
+    global COUNT
+    COUNT = COUNT+1
     
 def is_square(i):
     return i == math.isqrt(i) ** 2
@@ -31,36 +36,35 @@ def compute(seq):
         for j in deduplicated_list:
             if(seq[i] in j):
                 count.append([k for k in j if k!=seq[i]][0])
-        possibilities[seq[i]] = count
+        possibilities.append(count)
     
-    g_chain = {}
-    
-    for j in possibilities.keys():
-        previous_list = [j]
-        g_chain[str(j)] = build_grand_chain(possibilities[j],previous_list)
+    print(possibilities)
+    for j in range(len(possibilities)):
+        previous_list = [j+1]
+        find_all_solutions(possibilities[j],previous_list)
+    global COUNT
+    global n
+    print('n = {} has {} solutions'.format(n, math.floor(COUNT/2)))
 
 
-def build_grand_chain(next_possible_nodes, previous_list):
-    return_obj = {}
+def find_all_solutions(next_possible_nodes, previous_list):
+    global n
     next_possible_nodes = list(set(next_possible_nodes) - set(previous_list))
     if(len(next_possible_nodes) and len(previous_list)):
         for j in next_possible_nodes:
             previous_list_1 = list(previous_list)
             if (is_square(j+previous_list_1[-1])):
                 previous_list_1.append(j)
-                return_obj[str(j)] = build_grand_chain(possibilities[j],previous_list_1)
-            else:
-                return_obj[str(j)] = {}
+                find_all_solutions(possibilities[j-1],previous_list_1)
             #check if its already found
-            if(len(previous_list_1) == n and check_if_all_squares(previous_list_1) == n-1):
-                print(previous_list_1)
+            if(len(previous_list_1) == n
+               and check_if_all_squares(previous_list_1) == n-1
+               and len(list(set(previous_list_1) - set(list(range(1,n+1))))) == 0
+               ):
+                increment()
                 #check if all individual elements are unique
-                print(list(set(previous_list_1) - set(list(range(1,n+1)))))
                 #stop execution
-                sys.exit("Success")
-        return return_obj
-    else:
-        return {}
+                # sys.exit("Success")
 
     
 if __name__ == '__main__':
