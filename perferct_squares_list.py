@@ -126,7 +126,7 @@ def compute_v4(seq):
         grand_chain[k] = {}
         li = list ([k])
         for l in possibilities[li[-1]]:
-            if(l not in li):
+            if(l not in li and is_square(l+li[-1])):
                 exprr = 'grand_chain['
                 for x in li:
                     exprr += str(x) + ']' + '['
@@ -140,7 +140,7 @@ def compute_v4(seq):
 def build_grand_chain(li):
     if(len(li) > 0):
         for l in possibilities[li[-1]]:
-            if(l not in li):
+            if(l not in li and is_square(l+li[-1])):
                 exprr = 'grand_chain['
                 for x in li:
                     exprr += str(x) + ']' + '['
