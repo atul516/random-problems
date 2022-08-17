@@ -6,9 +6,8 @@ from collections.abc import MutableMapping
 import json 
 from scipy.stats._resampling import permutation_test
 
-grand_chain = {}
 possibilities = {}
-
+    
 def is_square(i):
     return i == math.isqrt(i) ** 2
 
@@ -31,6 +30,14 @@ def print_squares(seq):
     for i in range(l-1):
         print(seq[i] + seq[i+1])
 
+def build_grand_chain(previous_list):
+    last_elem = previous_list[-1]
+    next_possible_nodes = possibilities[last_elem]
+    for i, (j,v) in enumerate(next_possible_nodes.items()):
+        if (is_square(j+last_elem) and j not in previous_list):
+            previous_list.append(j)
+            return {j : build_grand_chain(previous_list)}
+
 def compute(seq):
     # print('**************Running Compute_v4 on sequence 32:*********************** \n ', seq)
     permutation_list= []
@@ -43,34 +50,24 @@ def compute(seq):
     deduplicated_list = [list(i) for i in deduplicated_set]
     
     for i in range(len(seq)):
-        count = []
+        count = {}
         for j in deduplicated_list:
             if(seq[i] in j):
-                count.append([k for k in j if k!=seq[i]][0])
+                count[[k for k in j if k!=seq[i]][0]] = {}
         possibilities[seq[i]] = count
 
-    # for i, (k,v) in enumerate(possibilities.items()):
-    #     print(i, k, v)
-
     for i, (k,v) in enumerate(possibilities.items()):
-        grand_chain[k] = {}
-        li = list ([k])
-        build_grand_chain(li)
-    json_dump = json.dumps(grand_chain,indent=2)
+        print(k, v)
+    
+    g_chain = {}
+    
+    for i, (j,v) in enumerate(possibilities.items()):
+        previous_list = [j]
+        g_chain[j] = build_grand_chain(previous_list)
+    
+    json_dump = json.dumps(g_chain,indent=2)
     print(json_dump)
-
-def build_grand_chain(li):
-    if(len(li) > 0):
-        for l in possibilities[li[-1]]:
-            if(l not in li and is_square(l+li[-1])):
-                exprr = 'grand_chain['
-                for x in li:
-                    exprr += str(x) + ']' + '['
-                exprr += str(l) + ']'
-                exec('{} = {}'.format(exprr, '{}'))
-                li.append(l)
-                build_grand_chain(li)
-
+    
 if __name__ == '__main__':
     argvparser = argparse.ArgumentParser()
     argvparser.add_argument('number', help='Number of elements', type=int)
