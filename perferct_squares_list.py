@@ -38,7 +38,6 @@ def compute(seq):
                 count.append([k for k in j if k!=seq[i]][0])
         possibilities.append(count)
     
-    print(possibilities)
     for j in range(len(possibilities)):
         previous_list = [j+1]
         find_all_solutions(possibilities[j],previous_list)
