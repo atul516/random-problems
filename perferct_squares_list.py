@@ -1,11 +1,13 @@
 import math
 import argparse
 import sys
+import time
 
 possibilities = []
-truncated_possibilities={}
 n = 0
 COUNT = 0
+start = time.perf_counter()
+sol_found = False
 def increment():
     global COUNT
     COUNT = COUNT+1
@@ -39,9 +41,11 @@ def compute(seq):
         possibilities.append(count)
     
     for j in range(len(possibilities)):
+        if(sol_found):
+            break
         previous_list = [j+1]
         next_possible_nodes = [x for x in possibilities[j] if x not in previous_list]
-        find_all_solutions(next_possible_nodes ,previous_list)
+        find_first_solution(next_possible_nodes ,previous_list)
     global COUNT
     global n
     print('n = {} has {} solutions'.format(n, math.floor(COUNT/2)))
@@ -65,6 +69,28 @@ def find_all_solutions(next_possible_nodes, previous_list):
                 #stop execution
                 # sys.exit("Success")
 
+def find_first_solution(next_possible_nodes, previous_list):
+    global n
+    global start
+    global sol_found
+    if(len(next_possible_nodes) and len(previous_list)):
+        for j in next_possible_nodes:
+            previous_list_1 = list(previous_list)
+            previous_list_1.append(j)
+            # check if its already found
+            if (len(previous_list_1) == n
+                    and check_if_all_squares(previous_list_1) == n - 1
+                    and len(list(set(previous_list_1) - set(list(range(1, n + 1))))) == 0
+            ):
+                sol_found = True
+                print(f"Solution found:\n {previous_list_1}")
+                end = time.perf_counter()
+                print(f"Time taken: {end - start} seconds")
+                # stop execution
+                sys.exit()
+            else:
+                next =  [x for x in possibilities[j-1] if x not in previous_list]
+                find_first_solution(next,previous_list_1)
     
 if __name__ == '__main__':
     argvparser = argparse.ArgumentParser()
