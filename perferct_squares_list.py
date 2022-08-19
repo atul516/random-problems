@@ -40,7 +40,8 @@ def compute(seq):
     
     for j in range(len(possibilities)):
         previous_list = [j+1]
-        find_all_solutions(possibilities[j],previous_list)
+        next_possible_nodes = [x for x in possibilities[j] if x not in previous_list]
+        find_all_solutions(next_possible_nodes ,previous_list)
     global COUNT
     global n
     print('n = {} has {} solutions'.format(n, math.floor(COUNT/2)))
@@ -48,13 +49,12 @@ def compute(seq):
 
 def find_all_solutions(next_possible_nodes, previous_list):
     global n
-    next_possible_nodes = list(set(next_possible_nodes) - set(previous_list))
     if(len(next_possible_nodes) and len(previous_list)):
         for j in next_possible_nodes:
             previous_list_1 = list(previous_list)
-            if (is_square(j+previous_list_1[-1])):
-                previous_list_1.append(j)
-                find_all_solutions(possibilities[j-1],previous_list_1)
+            previous_list_1.append(j)
+            next =  [x for x in possibilities[j-1] if x not in previous_list]
+            find_all_solutions(next,previous_list_1)
             #check if its already found
             if(len(previous_list_1) == n
                and check_if_all_squares(previous_list_1) == n-1
