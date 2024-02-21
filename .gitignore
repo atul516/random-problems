@@ -3,3 +3,4 @@ test.txt
 .pydevproject
 .settings/
 .idea/
+__pycache__/

@@ -39,13 +39,14 @@ def compute(seq):
             if(seq[i] in j):
                 count.append([k for k in j if k!=seq[i]][0])
         possibilities.append(count)
-    
+
     for j in range(len(possibilities)):
-        if(sol_found):
-            break
         previous_list = [j+1]
         next_possible_nodes = [x for x in possibilities[j] if x not in previous_list]
-        find_first_solution(next_possible_nodes ,previous_list)
+        find_all_solutions(next_possible_nodes ,previous_list)
+    global start
+    end = time.perf_counter()
+    print(f"Time taken: {end - start} seconds")
     global COUNT
     global n
     print('n = {} has {} solutions'.format(n, math.floor(COUNT/2)))
@@ -58,16 +59,17 @@ def find_all_solutions(next_possible_nodes, previous_list):
             previous_list_1 = list(previous_list)
             previous_list_1.append(j)
             next =  [x for x in possibilities[j-1] if x not in previous_list]
-            find_all_solutions(next,previous_list_1)
             #check if its already found
             if(len(previous_list_1) == n
                and check_if_all_squares(previous_list_1) == n-1
                and len(list(set(previous_list_1) - set(list(range(1,n+1))))) == 0
                ):
                 increment()
+                break
                 #check if all individual elements are unique
                 #stop execution
                 # sys.exit("Success")
+            find_all_solutions(next,previous_list_1)
 
 def find_first_solution(next_possible_nodes, previous_list):
     global n
